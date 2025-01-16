@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { sign } from 'jsonwebtoken';
 import { Model } from 'mongoose';
@@ -21,5 +21,19 @@ export class AuthService {
         expiresIn: process.env.JWT_EXPIRATION
       }
     )
+  }
+
+  public async validateUser(userId: string): Promise<User>{
+
+    const user: User = await this.usersModel.findOne({
+      _id: userId
+    })
+
+    if(!user){
+      throw new UnauthorizedException(`user not found`)
+    }
+
+    return user
+
   }
 }
