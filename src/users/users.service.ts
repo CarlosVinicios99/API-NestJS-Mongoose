@@ -22,7 +22,20 @@ export class UsersService {
   }
 
   public async signin(signinDto: SigninDto): Promise<{name: string, jwtToken: string, email: string}>{
-    const user = await this.findByEmail(signinDto.email)
+    const user: User = await this.findByEmail(signinDto.email)
+    const match: boolean = await this.checkPassword(signinDto.password, user)
+
+    if(!match){
+      throw new NotFoundException(`Invalid credentials`)
+    }
+
+    const jwtToken: string = await this.authService.createAccessToken(user._id)
+
+    return {
+      name: user.name,
+      jwtToken,
+      email: user.email
+    }
   }
 
   private async findByEmail(email: string): Promise<User>{
@@ -37,8 +50,8 @@ export class UsersService {
     return user
   }
 
-  private async checkPassword(password: string, user: User): Promise<Boolean> {
-    const match: boolean = bcrypt.compare(password, user.password)
+  private async checkPassword(password: string, user: User): Promise<boolean> {
+    const match = bcrypt.compare(password, user.password)
 
     if(!match){
       throw new NotFoundException(`Password not found`)
