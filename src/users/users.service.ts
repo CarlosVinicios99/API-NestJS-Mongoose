@@ -38,6 +38,10 @@ export class UsersService {
     }
   }
 
+  public async findAll(): Promise<User[]> {
+    return this.usersModel.find()
+  }
+
   private async findByEmail(email: string): Promise<User>{
     const user: User = await this.usersModel.findOne({
       email: email
@@ -51,7 +55,7 @@ export class UsersService {
   }
 
   private async checkPassword(password: string, user: User): Promise<boolean> {
-    const match = bcrypt.compare(password, user.password)
+    const match: boolean = await bcrypt.compare(password, user.password)
 
     if(!match){
       throw new NotFoundException(`Password not found`)
