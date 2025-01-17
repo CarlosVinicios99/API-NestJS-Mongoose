@@ -5,12 +5,14 @@ import { User } from './models/user.model';
 import { AuthService } from 'src/auth/auth.service';
 import { SignupDto } from './dto/signup.dto';
 import { SigninDto } from './dto/signin.dto';
+import { InjectModel } from '@nestjs/mongoose';
 
 
 @Injectable()
 export class UsersService {
 
   constructor(
+    @InjectModel('User')
     private readonly usersModel: Model<User>,
     private readonly authService: AuthService
   ){}
